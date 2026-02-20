@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TABLE_SIZE 100003
+
+typedef struct Node {
+    long long key;
+    long long count;
+    struct Node* next;
+} Node;
+
+Node* hashTable[TABLE_SIZE];
+
+int hash(long long key) {
+    long long h = key % TABLE_SIZE;
+    if (h < 0) h += TABLE_SIZE;
+    return (int)h;
+}
+
+long long getAndIncrement(long long key) {
+    int index = hash(key);
+    Node* temp = hashTable[index];
+
+    while (temp) {
+        if (temp->key == key) {
+            long long oldCount = temp->count;
+            temp->count++;
+            return oldCount;
+        }
+        temp = temp->next;
+    }
+
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->key = key;
+    newNode->count = 1;
+    newNode->next = hashTable[index];
+    hashTable[index] = newNode;
+
+    return 0;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    long long prefix_sum = 0;
+    long long count = 0;
+
+    for (int i = 0; i < TABLE_SIZE; i++)
+        hashTable[i] = NULL;
+
+    getAndIncrement(0);
+
+    for (int i = 0; i < n; i++) {
+        long long num;
+        scanf("%lld", &num);
+        prefix_sum += num;
+        count += getAndIncrement(prefix_sum);
+    }
+
+    printf("%lld\n", count);
+    return 0;
+}
