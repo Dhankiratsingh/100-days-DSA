@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* newNode(int data) {
+    struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
+    temp->data = data;
+    temp->next = NULL;
+    return temp;
+}
+
+
+void insert(struct Node** head, int data) {
+    struct Node* temp = newNode(data);
+
+    if (*head == NULL) {
+        *head = temp;
+        return;
+    }
+
+    struct Node* p = *head;
+    while (p->next != NULL)
+        p = p->next;
+
+    p->next = temp;
+}
+
+struct Node* merge(struct Node* a, struct Node* b) {
+    struct Node dummy;      // temporary dummy node
+    struct Node* tail = &dummy;
+    dummy.next = NULL;
+
+    while (a != NULL && b != NULL) {
+        if (a->data < b->data) {
+            tail->next = a;
+            a = a->next;
+        } else {
+            tail->next = b;
+            b = b->next;
+        }
+        tail = tail->next;
+    }
+
+    if (a != NULL)
+        tail->next = a;
+    else
+        tail->next = b;
+
+    return dummy.next;
+}
+
+
+void printList(struct Node* head) {
+    while (head != NULL) {
+        printf("%d ", head->data);
+        head = head->next;
+    }
+}
+
+int main() {
+    int n, m, x;
+    struct Node *list1 = NULL, *list2 = NULL;
+
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &x);
+        insert(&list1, x);
+    }
+
+    scanf("%d", &m);
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &x);
+        insert(&list2, x);
+    }
+
+    struct Node* result = merge(list1, list2);
+
+    
+    printList(result);
+
+    return 0;
+}
