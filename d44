@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+
+typedef struct QueueNode {
+    Node* treeNode;
+    struct QueueNode* next;
+} QueueNode;
+
+
+typedef struct Queue {
+    QueueNode *front, *rear;
+} Queue;
+
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(Queue* q, Node* node) {
+    QueueNode* temp = (QueueNode*)malloc(sizeof(QueueNode));
+    temp->treeNode = node;
+    temp->next = NULL;
+    if (!q->rear) {
+        q->front = q->rear = temp;
+        return;
+    }
+    q->rear->next = temp;
+    q->rear = temp;
+}
+
+Node* dequeue(Queue* q) {
+    if (!q->front) return NULL;
+    QueueNode* temp = q->front;
+    Node* node = temp->treeNode;
+    q->front = q->front->next;
+    if (!q->front) q->rear = NULL;
+    free(temp);
+    return node;
+}
+
+int isEmpty(Queue* q) {
+    return q->front == NULL;
+}
+
+
+Node* createNode(int data) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = data;
+    node->left = node->right = NULL;
+    return node;
+}
+
+
+Node* buildTree(int* arr, int n) {
+    if (n == 0 || arr[0] == -1) return NULL;
+
+    Node* root = createNode(arr[0]);
+    Queue* q = createQueue();
+    enqueue(q, root);
+
+    int i = 1;
+    while (i < n) {
+        Node* curr = dequeue(q);
+
+        if (i < n && arr[i] != -1) {
+            curr->left = createNode(arr[i]);
+            enqueue(q, curr->left);
+        }
+        i++;
+
+        
+        if (i < n && arr[i] != -1) {
+            curr->right = createNode(arr[i]);
+            enqueue(q, curr->right);
+        }
+        i++;
+    }
+    return root;
+}
+
+
+void inorder(Node* root) {
+    if (!root) return;
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+void preorder(Node* root) {
+    if (!root) return;
+    printf("%d ", root->data);
+    preorder(root->left);
+    preorder(root->right);
+}
+
+void postorder(Node* root) {
+    if (!root) return;
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d ", root->data);
+}
+
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    int* arr = (int*)malloc(N * sizeof(int));
+    for (int i = 0; i < N; i++) scanf("%d", &arr[i]);
+
+    Node* root = buildTree(arr, N);
+
+    inorder(root);
+    printf("\n");
+    preorder(root);
+    printf("\n");
+    postorder(root);
+    printf("\n");
+
+    free(arr);
+    return 0;
+}
