@@ -1,0 +1,161 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+
+Node* newNode(int val) {
+    if (val == -1) return NULL;
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+
+typedef struct QueueNode {
+    Node* treeNode;
+    struct QueueNode* next;
+} QueueNode;
+
+typedef struct Queue {
+    QueueNode *front, *rear;
+} Queue;
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(Queue* q, Node* node) {
+    if (!node) return;
+    QueueNode* temp = (QueueNode*)malloc(sizeof(QueueNode));
+    temp->treeNode = node;
+    temp->next = NULL;
+    if (!q->rear) {
+        q->front = q->rear = temp;
+    } else {
+        q->rear->next = temp;
+        q->rear = temp;
+    }
+}
+
+Node* dequeue(Queue* q) {
+    if (!q->front) return NULL;
+    QueueNode* temp = q->front;
+    Node* node = temp->treeNode;
+    q->front = q->front->next;
+    if (!q->front) q->rear = NULL;
+    free(temp);
+    return node;
+}
+
+int isEmpty(Queue* q) {
+    return q->front == NULL;
+}
+
+
+typedef struct StackNode {
+    Node* treeNode;
+    struct StackNode* next;
+} StackNode;
+
+void push(StackNode** top, Node* node) {
+    StackNode* temp = (StackNode*)malloc(sizeof(StackNode));
+    temp->treeNode = node;
+    temp->next = *top;
+    *top = temp;
+}
+
+Node* pop(StackNode** top) {
+    if (!*top) return NULL;
+    StackNode* temp = *top;
+    Node* node = temp->treeNode;
+    *top = (*top)->next;
+    free(temp);
+    return node;
+}
+
+int isStackEmpty(StackNode* top) {
+    return top == NULL;
+}
+
+
+void zigzagTraversal(Node* root) {
+    if (!root) return;
+
+    StackNode* currentLevel = NULL;
+    StackNode* nextLevel = NULL;
+    int leftToRight = 1;
+
+    push(&currentLevel, root);
+
+    while (!isStackEmpty(currentLevel)) {
+        Node* node = pop(&currentLevel);
+        printf("%d ", node->data);
+
+        if (leftToRight) {
+            if (node->left) push(&nextLevel, node->left);
+            if (node->right) push(&nextLevel, node->right);
+        } else {
+            if (node->right) push(&nextLevel, node->right);
+            if (node->left) push(&nextLevel, node->left);
+        }
+
+        if (isStackEmpty(currentLevel)) {
+            leftToRight = !leftToRight;
+            StackNode* temp = currentLevel;
+            currentLevel = nextLevel;
+            nextLevel = temp;
+        }
+    }
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+
+    if (N == 0) return 0;
+
+    Node* root = NULL;
+    int val;
+
+
+    scanf("%d", &val);
+    root = newNode(val);
+
+    Queue* q = createQueue();
+    enqueue(q, root);
+
+    int count = 1;
+    while (!isEmpty(q) && count < N) {
+        Node* node = dequeue(q);
+        int leftVal, rightVal;
+
+        if (count < N) {
+            scanf("%d", &leftVal);
+            node->left = newNode(leftVal);
+            enqueue(q, node->left);
+            count++;
+        }
+
+       
+        if (count < N) {
+            scanf("%d", &rightVal);
+            node->right = newNode(rightVal);
+            enqueue(q, node->right);
+            count++;
+        }
+    }
+
+ 
+    zigzagTraversal(root);
+
+    return 0;
+}
