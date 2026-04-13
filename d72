@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+
+int main() {
+    char s[100005];
+    scanf("%s", s);
+
+    int first[26];
+    for (int i = 0; i < 26; i++) {
+        first[i] = -1;
+    }
+
+    int minSecondIndex = INT_MAX;
+    char result = '-';
+
+    for (int i = 0; s[i] != '\0'; i++) {
+        int idx = s[i] - 'a';
+
+        if (first[idx] == -1) {
+            first[idx] = i;  // first time seen
+        } else {
+            // repeated character found
+            if (i < minSecondIndex) {
+                minSecondIndex = i;
+                result = s[i];
+            }
+        }
+    }
+
+    if (result == '-') {
+        printf("-1\n");
+    } else {
+        printf("%c\n", result);
+    }
+
+    return 0;
+}
