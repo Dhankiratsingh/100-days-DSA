@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+#define MAX 100000
+#define OFFSET 50000
+
+int main() {
+    int arr[] = {15, -2, 2, -8, 1, 7, 10, 23};
+    int n = 8;
+
+    int prefixSum = 0;
+    int maxLen = 0;
+
+    int firstIndex[2 * MAX];
+
+    for (int i = 0; i < 2 * MAX; i++) {
+        firstIndex[i] = -1;
+    }
+
+    for (int i = 0; i < n; i++) {
+        prefixSum += arr[i];
+
+        if (prefixSum == 0) {
+            maxLen = i + 1;
+        }
+
+        int index = prefixSum + OFFSET;
+
+        if (firstIndex[index] == -1) {
+            firstIndex[index] = i;
+        } else {
+            int len = i - firstIndex[index];
+            if (len > maxLen) {
+                maxLen = len;
+            }
+        }
+    }
+
+    printf("%d\n", maxLen);
+
+    return 0;
+}
