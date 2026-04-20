@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 1000
+
+int minDistance(int dist[], int vis[], int n) {
+    int min = INT_MAX, idx = -1;
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i] && dist[i] <= min) {
+            min = dist[i];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+void dijkstra(int n, int adj[MAX][MAX], int source) {
+    int dist[MAX], vis[MAX] = {0};
+
+    for (int i = 1; i <= n; i++)
+        dist[i] = INT_MAX;
+
+    dist[source] = 0;
+
+    for (int count = 1; count <= n - 1; count++) {
+        int u = minDistance(dist, vis, n);
+        vis[u] = 1;
+
+        for (int v = 1; v <= n; v++) {
+            if (!vis[v] && adj[u][v] && dist[u] != INT_MAX &&
+                dist[u] + adj[u][v] < dist[v]) {
+                dist[v] = dist[u] + adj[u][v];
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] == INT_MAX)
+            printf("INF ");
+        else
+            printf("%d ", dist[i]);
+    }
+}
+
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    int adj[MAX][MAX] = {0};
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        adj[u][v] = w;
+        adj[v][u] = w;
+    }
+
+    int source;
+    scanf("%d", &source);
+
+    dijkstra(n, adj, source);
+
+    return 0;
+}
