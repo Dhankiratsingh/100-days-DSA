@@ -1,0 +1,27 @@
+#include <stdio.h>
+
+int integerSquareRoot(int n) {
+    if (n == 0) return 0;
+
+    int low = 0, high = n;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        long long midSquare = (long long)mid * mid;
+
+        if (midSquare == n) {
+            return mid;
+        } else if (midSquare < n) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return high;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    printf("%d\n", integerSquareRoot(n));
+    return 0;
+}
