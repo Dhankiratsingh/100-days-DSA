@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int value;
+    int index;
+} Element;
+
+void mergeAndCount(Element arr[], int temp[], int left, int mid, int right, int result[]) {
+    int i = left, j = mid + 1, k = left;
+    
+    while (i <= mid && j <= right) {
+        if (arr[i].value <= arr[j].value) {
+            temp[k++] = arr[i++].value;
+        } else {
+            temp[k++] = arr[j++].value;
+            result[arr[i].index] += (mid - i + 1);
+        }
+    }
+    
+    while (i <= mid) {
+        temp[k++] = arr[i++].value;
+    }
+    
+    while (j <= right) {
+        temp[k++] = arr[j++].value;
+    }
+    
+    for (i = left; i <= right; i++) {
+        arr[i].value = temp[i];
+    }
+}
+
+void mergeSortAndCount(Element arr[], int temp[], int left, int right, int result[]) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+        
+        mergeSortAndCount(arr, temp, left, mid, result);
+        mergeSortAndCount(arr, temp, mid + 1, right, result);
+        
+        mergeAndCount(arr, temp, left, mid, right, result);
+    }
+}
+
+int* countSmaller(int* nums, int numsSize, int* returnSize) {
+    *returnSize = numsSize;
+    Element arr[numsSize];
+    int result[numsSize];
+    int temp[numsSize];
+    
+    for (int i = 0; i < numsSize; i++) {
+        arr[i].value = nums[i];
+        arr[i].index = i;
+        result[i] = 0;
+    }
+    
+    mergeSortAndCount(arr, temp, 0, numsSize - 1, result);
+    
+    int* output = (int*)malloc(numsSize * sizeof(int));
+    for (int i = 0; i < numsSize; i++) {
+        output[i] = result[i];
+    }
+    
+    return output;
+}
+
+int main() {
+    int nums[] = {5, 2, 6, 1};
+    int numsSize = 4;
+    int returnSize;
+    
+    int* result = countSmaller(nums, numsSize, &returnSize);
+    
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d ", result[i]);
+    }
+    printf("\n");
+    
+    free(result);
+    
+    return 0;
+}
