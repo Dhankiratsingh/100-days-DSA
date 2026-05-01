@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void insertionSort(float arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        float key = arr[i];
+        int j = i - 1;
+        
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = key;
+    }
+}
+
+void bucketSort(float arr[], int n) {
+    if (n <= 0) return;
+
+    // Step 1: Create empty buckets
+    float **buckets = (float **)malloc(n * sizeof(float *));
+    int *bucketCounts = (int *)malloc(n * sizeof(int));
+    
+    for (int i = 0; i < n; i++) {
+        buckets[i] = (float *)malloc(n * sizeof(float));  // each bucket can store up to n elements
+        bucketCounts[i] = 0;
+    }
+
+    // Step 2: Distribute elements into buckets
+    for (int i = 0; i < n; i++) {
+        int index = (int)(arr[i] * n);  // Find the index of the bucket
+        buckets[index][bucketCounts[index]] = arr[i];
+        bucketCounts[index]++;
+    }
+
+    // Step 3: Sort each bucket and concatenate
+    int idx = 0;
+    for (int i = 0; i < n; i++) {
+        if (bucketCounts[i] > 0) {
+            insertionSort(buckets[i], bucketCounts[i]);
+            for (int j = 0; j < bucketCounts[i]; j++) {
+                arr[idx++] = buckets[i][j];
+            }
+        }
+    }
+
+    // Free dynamically allocated memory for buckets
+    for (int i = 0; i < n; i++) {
+        free(buckets[i]);
+    }
+    free(buckets);
+    free(bucketCounts);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    float arr[n];
+    for (int i = 0; i < n; i++) {
+        scanf("%f", &arr[i]);
+    }
+    
+    bucketSort(arr, n);
+    
+    for (int i = 0; i < n; i++) {
+        printf("%f ", arr[i]);
+    }
+    printf("\n");
+    
+    return 0;
+}
