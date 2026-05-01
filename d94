@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+void countingSort(int arr[], int n) {
+    int max = arr[0];
+    
+    // Find the maximum element in the array
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+
+    // Create a frequency array to store the count of each element
+    int freq[max + 1];
+    for (int i = 0; i <= max; i++) {
+        freq[i] = 0;
+    }
+
+    // Fill the frequency array
+    for (int i = 0; i < n; i++) {
+        freq[arr[i]]++;
+    }
+
+    // Compute the prefix sum in the frequency array
+    for (int i = 1; i <= max; i++) {
+        freq[i] += freq[i - 1];
+    }
+
+    // Build the output array
+    int output[n];
+    for (int i = n - 1; i >= 0; i--) {
+        output[freq[arr[i]] - 1] = arr[i];
+        freq[arr[i]]--;
+    }
+
+    // Copy the sorted output array to the original array
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    int arr[n];
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    countingSort(arr, n);
+    
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    
+    return 0;
+}
